@@ -24,4 +24,24 @@
     value="<%= !locals.bookinstance ? "" : bookinstance.due_back_yyyy_mm_dd
     %>"/>
   </div>
+  <div class="form-group">
+    <label for="status">Status: </label>
+    <select name="status" id="status" class="form-control" required>
+      <option value="">--Please select a status--</option>
+      <% ["Maintenance", "Available", "Loaned", "Reserved"].forEach((value) => {
+      %> <% if(!locals.book_instance || bookinstance.status !== value) { %>
+      <option value="<%= value %>"><%= value %></option>
+      <% } else { %>
+      <option value="<%= value %>"><%= value %></option>
+      <% } %> <% }) %>
+    </select>
+  </div>
+  <button class="btn btn-primary" type="submit">Submit</button>
 </form>
+<% if(locals.errors) { %>
+<ul>
+  <% for(let error of errors) { %>
+  <li><%= error.msg %></li>
+  <% } %>
+</ul>
+<% } %>

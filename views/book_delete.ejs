@@ -1,4 +1,4 @@
-<h1><%= title %></h1>
+<h1><%= title %>: <%= book.title %></h1>
 <p>
   <strong>Author: </strong>
   <a href="<%= book.author.url %>"><%= book.author.name %></a>
@@ -10,8 +10,13 @@
   <% book.genre.forEach((genre, index) => { %>
   <a href="<%= genre.url %>"><%= genre.name %></a><% if(index <book.genre.length - 1) { %>,<% } %> <% }) %>
 </p>
+<% if(book_instances.length) { %>
+<p>
+  <strong
+    >Delete the following book instances before attempting to delete this book.</strong
+  >
+</p>
 <div style="margin-left:20px;margin-top:20px">
-    <% if(book_instances.length) { %>
     <h4>Copies</h4>
     <% book_instances.forEach((book_instance) => { %>
         <hr>
@@ -27,13 +32,19 @@
             <p><strong>Due back:</strong> <%= book_instance.due_back %></p>
         <% } %>
         <p><strong>Id:</strong> <a href="<%= book_instance.url %>"><%= book_instance._id %></a></p>
-        <p>
-            <a href="<%= book_instance.url + "/delete" %>">Delete book instance</a>
-        </p>
     <% }) %>
-    <% } else { %>
-        <p>There are no copies of this book in the library.</p>
-        <% } %>
+<% } else { %>
+  <p>Do you really want to delete this Author?</p>
+  <form method="post">
+    <div class="form-group">
+      <input
+        type="hidden"
+        id="bookid"
+        class="form-control"
+        name="bookid"
+        value="<%= book._id %>"
+      />
+    <button class="btn btn-primary" type="submit">Delete</button>
+  </form>
 </div>
-<p><a href="<%= book.url + "/delete" %>">Delete</a></p>
-<p><a href="<%= book.url + "/update" %>">Update</a></p>
+<% } %>
