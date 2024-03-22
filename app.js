@@ -25,7 +25,7 @@ mongoose.set("strictQuery", false);
 async function main() {
   const dev_db_url =
     "mongodb+srv://admin:mypassword@cluster0.gtpnbtc.mongodb.net/local_library?retryWrites=true&w=majority&appName=Cluster0";
-  const mongoDB = process.env.MONGODB_URI || dev_db_url;
+  const mongoDB = process.env.MONGO_URL || dev_db_url;
 
   await mongoose.connect(mongoDB);
 }
