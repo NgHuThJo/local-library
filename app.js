@@ -7,6 +7,14 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const catalogRouter = require("./routes/catalog");
 
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 20,
+});
+
 const app = express();
 
 // Connect to database
@@ -14,10 +22,11 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
 async function main() {
-  const uri =
+  const dev_db_url =
     "mongodb+srv://admin:mypassword@cluster0.gtpnbtc.mongodb.net/local_library?retryWrites=true&w=majority&appName=Cluster0";
+  const mongoDB = process.env.MONGODB_URI || dev_db_url;
 
-  await mongoose.connect(uri);
+  await mongoose.connect(mongoDB);
 }
 
 main().catch((err) => console.log(err));
@@ -25,6 +34,16 @@ main().catch((err) => console.log(err));
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
+
+app.use(compression());
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "script-src": ["'self'", "code.jquery.com", "cdn.jsdelivr.net"],
+    },
+  })
+);
+app.use(limiter);
 
 app.use(logger("dev"));
 app.use(express.json());
