@@ -1,4 +1,4 @@
-<h1><%= title %></h1>
+<h1><%- title %></h1>
 <p>
   <strong>Author: </strong>
   <a href="<%= book.author.url %>"><%= book.author.name %></a>
@@ -24,16 +24,13 @@
         <% } %>
         <p><strong>Imprint:</strong> <%= book_instance.imprint %></p>
         <% if(book_instance.status !== "Available") { %>
-            <p><strong>Due back:</strong> <%= book_instance.due_back %></p>
+            <p><strong>Due back:</strong> <%= book_instance.due_back_formatted %></p>
         <% } %>
         <p><strong>Id:</strong> <a href="<%= book_instance.url %>"><%= book_instance._id %></a></p>
-        <p>
-            <a href="<%= book_instance.url + "/delete" %>">Delete book instance</a>
-        </p>
     <% }) %>
     <% } else { %>
         <p>There are no copies of this book in the library.</p>
-        <% } %>
+    <% } %>
 </div>
 <p><a href="<%= book.url + "/delete" %>">Delete</a></p>
 <p><a href="<%= book.url + "/update" %>">Update</a></p>

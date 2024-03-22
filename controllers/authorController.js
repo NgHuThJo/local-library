@@ -81,10 +81,11 @@ exports.author_create_post = [
 
     if (!errors.isEmpty()) {
       // There are errors. Render form again with sanitized values/errors messages.
-      res.render("author_form", {
+      res.render("layout", {
         title: "Create Author",
         author: author,
         errors: errors.array(),
+        content: "./author_form",
       });
       return;
     } else {
@@ -136,9 +137,65 @@ exports.author_delete_post = asyncHandler(async (req, res, next) => {
 });
 
 exports.author_update_get = asyncHandler(async (req, res, next) => {
-  res.send("not implemented: author update get");
+  const author = await Author.findById(req.params.id).exec();
+
+  res.render("layout", {
+    title: "Update Author",
+    author: author,
+    content: "./author_form",
+  });
 });
 
-exports.author_update_post = asyncHandler(async (req, res, next) => {
-  res.send("not implemented: author update post");
-});
+exports.author_update_post = [
+  body("first_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("First name must be specified.")
+    .isAlphanumeric()
+    .withMessage("First name has non-alphanumeric characters."),
+  body("family_name")
+    .trim()
+    .isLength({ min: 1 })
+    .escape()
+    .withMessage("Family name must be specified.")
+    .isAlphanumeric()
+    .withMessage("Family name has non-alphanumeric characters."),
+  body("date_of_birth", "Invalid date of birth")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+  body("date_of_death", "Invalid date of death")
+    .optional({ values: "falsy" })
+    .isISO8601()
+    .toDate(),
+
+  asyncHandler(async (req, res, next) => {
+    const errors = validationResult(req);
+
+    const author = new Author({
+      first_name: req.body.first_name,
+      family_name: req.body.family_name,
+      date_of_birth: req.body.date_of_birth,
+      date_of_death: req.body.date_of_death,
+      _id: req.params.id,
+    });
+
+    if (!errors.isEmpty()) {
+      res.render("layout", {
+        title: "Update Author",
+        author: author,
+        errors: errors.array(),
+        content: "./author_form",
+      });
+    } else {
+      const updatedAuthor = await Author.findByIdAndUpdate(
+        req.params.id,
+        author,
+        {}
+      );
+
+      res.redirect(updatedAuthor.url);
+    }
+  }),
+];

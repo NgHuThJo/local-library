@@ -2,6 +2,7 @@ const Book = require("../models/book");
 const BookInstance = require("../models/bookinstance");
 const { body, validationResult } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const book = require("../models/book");
 
 // Display list of all BookInstances.
 exports.bookinstance_list = asyncHandler(async (req, res, next) => {
@@ -38,7 +39,7 @@ exports.bookinstance_create_get = asyncHandler(async (req, res, next) => {
   const allBooks = await Book.find({}, "title").sort({ title: 1 }).exec();
 
   res.render("layout", {
-    title: "Create BookInstance",
+    title: "Create Book Instance",
     book_list: allBooks,
     content: "./bookinstance_form",
   });
@@ -71,11 +72,11 @@ exports.bookinstance_create_post = [
       const allBooks = await Book.find({}, "title").sort({ title: 1 }).exec();
 
       res.render("layout", {
-        title: "Create BookInstance",
+        title: "Create Book Instance",
         book_list: allBooks,
-        selected_book: bookInstance._id,
+        selected_book: bookInstance.book._id,
         errors: errors.array(),
-        bookInstance: bookInstance,
+        bookinstance: bookInstance,
         content: "./bookinstance_form",
       });
 
@@ -110,7 +111,18 @@ exports.bookinstance_delete_post = asyncHandler(async (req, res, next) => {
 
 // Display BookInstance update form on GET.
 exports.bookinstance_update_get = asyncHandler(async (req, res, next) => {
-  res.send("NOT IMPLEMENTED: BookInstance update GET");
+  const [allBooks, bookInstance] = await Promise.all([
+    Book.find({}, "title").sort({ title: 1 }).exec(),
+    BookInstance.findById(req.params.id).exec(),
+  ]);
+
+  res.render("layout", {
+    title: "Update Book Instance",
+    book_list: allBooks,
+    selected_book: bookInstance.book._id,
+    bookinstance: bookInstance,
+    content: "./bookinstance_form",
+  });
 });
 
 // Handle bookinstance update on POST.
