@@ -7,37 +7,20 @@ const logger = require("morgan");
 const indexRouter = require("./routes/index");
 const catalogRouter = require("./routes/catalog");
 
-const mongoose = require("mongoose");
-
-// Define a schema
-const Schema = mongoose.Schema;
-
-const authorSchema = new Schema({
-  name: String,
-  stories: [{ type: Schema.Types.ObjectId, ref: "Story" }],
-});
-
-const storySchema = new Schema({
-  author: { type: Schema.Types.ObjectId, ref: "Author" },
-  title: String,
-});
-
-// Compile models from schema
-// const Story = mongoose.model("Story", storySchema);
-// const Author = mongoose.model("Author", authorSchema);
-
 const app = express();
 
 // Connect to database
+const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-main().catch((err) => console.log(err));
 async function main() {
   const uri =
     "mongodb+srv://admin:mypassword@cluster0.gtpnbtc.mongodb.net/local_library?retryWrites=true&w=majority&appName=Cluster0";
 
   await mongoose.connect(uri);
 }
+
+main().catch((err) => console.log(err));
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
